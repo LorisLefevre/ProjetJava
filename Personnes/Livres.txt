@@ -2,4 +2,4 @@
 12,AB,CD,EF,2003,20032005,65,
 12,AB,CD,EF,2003,45,60,
 34,,,,,,,
-123,Livre,Auteur,Editeur,2005,25251552,84,
+123,ClassesMétier.Livre,ClassesMétier.Auteur,ClassesMétier.Editeur,2005,25251552,84,
