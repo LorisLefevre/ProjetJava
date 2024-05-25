@@ -70,7 +70,7 @@ public class LoginWindow extends JFrame
 
     public static void main(String[] args)
     {
-        SwingUtilities.invokeLater(LoginWindow::new);
+        //SwingUtilities.invokeLater(LoginWindow::new);
         LoginWindow loginWindow = new LoginWindow();
         LibraryManager libraryManager = new LibraryManager();
         LibraryClient libraryClient = new LibraryClient();

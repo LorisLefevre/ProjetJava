@@ -149,13 +149,13 @@ public class LibraryManager extends JFrame implements ActionListener
             }
         });
 
-        exitButton.addActionListener(new ActionListener()
+        /*exitButton.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent e)
             {
                 exit();
             }
-        });
+        });*/
 
         // Ajout du panneau principal à la JFrame
         getContentPane().add(mainPanel);
@@ -190,13 +190,13 @@ public class LibraryManager extends JFrame implements ActionListener
         tableFrame.setVisible(true);
     }
 
-    private void exit()
+    /*private void exit()
     {
         dispose();
         //Que fait dispose ?
         // dispose() permet de libérer les ressources utilisées par la JFrame
         System.exit(0);
-    }
+    }*/
 
     private void clear()
     {

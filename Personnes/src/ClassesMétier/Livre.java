@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 public class Livre
 {
-    private static int ID = 0;
+    private int ID;
     private String Titre;
     private String Auteur;
     private String Editeur;
@@ -56,7 +56,7 @@ public class Livre
 
     public void setID(int ID)
     {
-        this.ID = ++ID;
+        this.ID = ID;
     }
 
     public void setTitre(String Titre)

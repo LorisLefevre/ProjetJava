@@ -55,7 +55,7 @@ public class LibraryClient extends JFrame
         emprunterButton = new JButton("EMPRUNTER");
         rendreButton = new JButton("RENDRE");
         rechercherButton = new JButton("RECHERCHER");
-        quitterButton = new JButton("QUITTER");
+        quitterButton = new JButton("QUITTER XXXXX");
         topPanel.add(emprunterButton);
         topPanel.add(rendreButton);
         topPanel.add(rechercherButton);

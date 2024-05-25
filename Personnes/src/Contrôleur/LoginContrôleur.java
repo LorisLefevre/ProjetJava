@@ -4,12 +4,14 @@ import ClassesMétier.*;
 import InterfacesGraphiques.LibraryClient;
 import InterfacesGraphiques.LibraryManager;
 import InterfacesGraphiques.LoginWindow;
+import org.w3c.dom.ls.LSOutput;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
-public class LoginContrôleur
+public final class LoginContrôleur
 {
     private LibraryClient libraryClient;
 
@@ -35,11 +37,29 @@ public class LoginContrôleur
 
     public void setLoginListeners()
     {
+        libraryClient.getQuitterButton().addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e)
+            {
+                System.out.println("----- quit client ------");
+                System.exit(0);
+            }
+        });
+
+        libraryManager.getExitButton().addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e)
+            {
+                System.out.println("----- quit manager------");
+                System.exit(0);
+            }
+        });
 
         loginWindow.getLoginUserButton().addActionListener(new ActionListener()
         {
+
             public void actionPerformed(ActionEvent e)
             {
+
+                System.out.println("---- login ----");
                 loginUser();
             }
         });
@@ -67,7 +87,7 @@ public class LoginContrôleur
         {
             // Si la connexion est réussie, afficher le message de bienvenue et ouvrir la fenêtre de la bibliothèque
             loginWindow.getLoginUserButton().addActionListener(e -> showDialog("Bienvenue cher client"));
-            LibraryClient libraryClient = new LibraryClient();
+            //LibraryClient libraryClient = new LibraryClient();
             libraryClient.setUsername(username);
             libraryClient.setVisible(true);
         }
