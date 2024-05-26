@@ -1,6 +1,6 @@
 package Contrôleur;
-import ClassesMétier.*;
-import InterfacesGraphiques.*;
+import Modèle.CoucheAccèsDonnées.*;
+import Vue.VueGénérale;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

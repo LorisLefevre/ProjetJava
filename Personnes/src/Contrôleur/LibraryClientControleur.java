@@ -1,8 +1,8 @@
 package Contrôleur;
 
-import ClassesMétier.*;
-import InterfacesGraphiques.LibraryClient;
-import InterfacesGraphiques.LibraryManager;
+import Modèle.ClassesMétier.*;
+import Modèle.CoucheAccèsDonnées.*;
+import Vue.InterfacesGraphiques.LibraryClient;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;

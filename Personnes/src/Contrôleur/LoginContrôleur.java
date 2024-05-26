@@ -1,15 +1,13 @@
 package Contrôleur;
 
-import ClassesMétier.*;
-import InterfacesGraphiques.LibraryClient;
-import InterfacesGraphiques.LibraryManager;
-import InterfacesGraphiques.LoginWindow;
-import org.w3c.dom.ls.LSOutput;
+import Modèle.ClassesMétier.*;
+import Vue.InterfacesGraphiques.LibraryClient;
+import Vue.InterfacesGraphiques.LibraryManager;
+import Vue.InterfacesGraphiques.LoginWindow;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 
 public final class LoginContrôleur
 {

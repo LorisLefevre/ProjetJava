@@ -1,10 +1,10 @@
 package Contrôleur;
 
-import ClassesMétier.Auteur;
-import ClassesMétier.Bibliothecaire;
-import ClassesMétier.Editeur;
-import ClassesMétier.Livre;
-import InterfacesGraphiques.LibraryManager;
+import Modèle.ClassesMétier.Auteur;
+import Modèle.ClassesMétier.Bibliothecaire;
+import Modèle.ClassesMétier.Editeur;
+import Modèle.ClassesMétier.Livre;
+import Vue.InterfacesGraphiques.LibraryManager;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
