@@ -51,7 +51,7 @@ public final class LoginContrôleur
             }
         });
 
-        loginWindow.getLoginUserButton().addActionListener(new ActionListener()
+        /*loginWindow.getLoginUserButton().addActionListener(new ActionListener()
         {
 
             public void actionPerformed(ActionEvent e)
@@ -60,7 +60,7 @@ public final class LoginContrôleur
                 System.out.println("---- login ----");
                 loginUser();
             }
-        });
+        });*/
 
         loginWindow.getLoginAdminButton().addActionListener(new ActionListener()
         {

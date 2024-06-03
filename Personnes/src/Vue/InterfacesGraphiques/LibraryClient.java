@@ -1,18 +1,19 @@
 package Vue.InterfacesGraphiques;
 
 import Modèle.ClassesMétier.Client;
-import Contrôleur.LibraryClientControleur;
+import Contrôleur.ActionsContrôleur;
+import Vue.VueLibraryClient;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ActionListener;
 
-public class LibraryClient extends JFrame
+public class LibraryClient extends JFrame implements VueLibraryClient
 {
 
     private Client client;
 
-    private LibraryClientControleur libraryClientControleur;
     private JTextField usernameField;
     private JButton emprunterButton;
     private JButton rendreButton;
@@ -26,6 +27,26 @@ public class LibraryClient extends JFrame
     public void setUsername(String username)
     {
         usernameField.setText(username);
+    }
+
+    public JButton getEmprunterButton()
+    {
+        return emprunterButton;
+    }
+
+    public JButton getRendreButton()
+    {
+        return rendreButton;
+    }
+
+    public JButton getRechercherButton()
+    {
+        return rechercherButton;
+    }
+
+    public JButton getQuitterButton()
+    {
+        return quitterButton;
     }
     public LibraryClient()
     {
@@ -54,11 +75,16 @@ public class LibraryClient extends JFrame
         emprunterButton = new JButton("EMPRUNTER");
         rendreButton = new JButton("RENDRE");
         rechercherButton = new JButton("RECHERCHER");
-        quitterButton = new JButton("QUITTER XXXXX");
+        quitterButton = new JButton("QUITTER");
         topPanel.add(emprunterButton);
         topPanel.add(rendreButton);
         topPanel.add(rechercherButton);
         topPanel.add(quitterButton);
+
+        emprunterButton.setActionCommand(ActionsContrôleur.EMPRUNTER);
+        rendreButton.setActionCommand(ActionsContrôleur.RENDRE);
+        rechercherButton.setActionCommand(ActionsContrôleur.RECHERCHER);
+        quitterButton.setActionCommand(ActionsContrôleur.EXIT);
 
         mainPanel.add(topPanel, BorderLayout.NORTH);
 
@@ -83,8 +109,6 @@ public class LibraryClient extends JFrame
         /*emprunterButton.addActionListener(e -> showDialog("Vous avez emprunté un livre."));
         emprunterButton.addActionListener(e -> showDialog("Vous ne pouvez pas emprunter ce livre."));
 */
-        rendreButton.addActionListener(e -> showDialog("Vous avez rendu un livre."));
-        rendreButton.addActionListener(e -> showDialog("Vous n'avez pas de livre à rendre."));
         rendreButton.addActionListener(e -> {
             // Récupérer l'index de la ligne sélectionnée
             int selectedRow = table.getSelectedRow();
@@ -123,51 +147,38 @@ public class LibraryClient extends JFrame
             }
         });
 
-        rechercherButton.addActionListener(e -> showDialog("Ce livre est disponible."));
-        rechercherButton.addActionListener(e -> showDialog("Nous n'avons pas ce livre"));
-
         //quitterButton.addActionListener(e -> libraryClientContrôleur.exitApplication());
 
         getContentPane().add(mainPanel);
     }
 
-    private void showDialog(String message) {
+    public void emprunterButtonListener(ActionListener listener)
+    {
+        emprunterButton.addActionListener(listener);
+    }
+
+    public void rendreButtonListener(ActionListener listener)
+    {
+        rendreButton.addActionListener(listener);
+    }
+
+    public void rechercherButtonListener(ActionListener listener)
+    {
+        rechercherButton.addActionListener(listener);
+    }
+
+    public void quitterButtonListener(ActionListener listener)
+    {
+        quitterButton.addActionListener(listener);
+    }
+
+    public void showMessage(String message)
+    {
         JOptionPane.showMessageDialog(this, message);
     }
 
-    public JButton getEmprunterButton()
-    {
-        return emprunterButton;
-    }
-
-    public JButton getRendreButton()
-    {
-        return rendreButton;
-    }
-
-    public JButton getRechercherButton()
-    {
-        return rechercherButton;
-    }
-
-    public JButton getQuitterButton()
-    {
-        return quitterButton;
-    }
-
-
-
-    public class Main
-    {
-        public static void main(String[] args)
-        {
-            SwingUtilities.invokeLater(LibraryClient::new);
-            Client client = new Client();
-            LoginWindow loginWindow = new LoginWindow();
-            LibraryClient libraryClient = new LibraryClient();
-            LibraryClientControleur libraryClientControleur = new LibraryClientControleur(libraryClient);
-
-        }
+    private void showDialog(String message) {
+        JOptionPane.showMessageDialog(this, message);
     }
 
 }

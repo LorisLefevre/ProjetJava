@@ -30,44 +30,47 @@ public class Bibliothecaire extends Personne
         this.AdminPassword = AdminPassword;
     }
 
-    public static Bibliothecaire seConnecter(String username, String password)
-    {
-        loadAdminData(); // Charger les données des utilisateurs depuis le fichier
-        // Vérifier si le client existe déjà
-        if (admins.containsKey(username))
-        {
+    public static Bibliothecaire seConnecter(String username, String password) {
+        loadAdminData(); // Charger les données des administrateurs depuis le fichier
+        // Vérifier si l'administrateur existe déjà
+        if (admins.containsKey(username)) {
             String storedPassword = admins.get(username);
             // Vérifier le mot de passe
-            if (storedPassword.equals(password))
-            {
+            if (storedPassword.equals(password)) {
                 System.out.println("Connexion réussie pour " + username);
                 return new Bibliothecaire(username, password);
-            }
-            else
-            {
+            } else {
                 System.out.println("Mot de passe incorrect pour " + username);
                 return null;
             }
-        }
-        else
-        {
-            // Créer un nouveau client
+        } else {
+            // Créer un nouveau administrateur
             admins.put(username, password);
-            saveAdminData();
+            saveAdminData(); // Sauvegarder les données des administrateurs dans le fichier
             System.out.println("Nouvel administrateur créé : " + username);
             return new Bibliothecaire(username, password);
         }
     }
 
-    private static void loadAdminData()
-    {
-        try (BufferedReader reader = new BufferedReader(new FileReader("C:\\Users\\Loris\\Personnes\\ADMIN.txt"))) {
+    private static void loadAdminData() {
+        File file = new File("C:\\Users\\Loris\\Personnes\\ADMIN.txt");
+        if (!file.exists()) {
+            System.out.println("Le fichier n'existe pas, création d'un nouveau fichier.");
+            return;
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
-                admins.put(parts[0], parts[1]);
+                if (parts.length == 2) {
+                    admins.put(parts[0], parts[1]);
+                } else {
+                    System.out.println("Ligne mal formatée : " + line);
+                }
             }
         } catch (IOException e) {
+            System.err.println("Erreur lors de la lecture du fichier : " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -80,6 +83,7 @@ public class Bibliothecaire extends Personne
                 writer.newLine();
             }
         } catch (IOException e) {
+            System.err.println("Erreur lors de l'écriture dans le fichier : " + e.getMessage());
             e.printStackTrace();
         }
     }

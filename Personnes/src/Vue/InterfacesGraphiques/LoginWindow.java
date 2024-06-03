@@ -1,15 +1,20 @@
 package Vue.InterfacesGraphiques;
 
+import Contrôleur.Contrôleur;
+import Contrôleur.ActionsContrôleur;
+import Modèle.ClassesMétier.Bibliothecaire;
 import Modèle.ClassesMétier.Client;
 import Contrôleur.LoginContrôleur;
+import Vue.VueGénérale;
+import Vue.VueGénéraleConsole;
+import Vue.VueLogin;
 
 import javax.swing.*;
+import java.awt.event.ActionListener;
 
-public class LoginWindow extends JFrame
+public class LoginWindow extends JFrame implements VueLogin
 {
-    private LoginContrôleur loginContrôleur;
-
-    private Client client;
+    private LoginWindow loginWindow;
     private JTextField usernameField;
 
     public JTextField getUsernameField()
@@ -17,31 +22,28 @@ public class LoginWindow extends JFrame
         return usernameField;
     }
     private JPasswordField passwordField;
-
     public JPasswordField getPasswordField()
     {
         return passwordField;
     }
     private JButton loginAdminButton;
-
     public JButton getLoginAdminButton()
     {
         return loginAdminButton;
     }
     private JButton loginUserButton;
-
     public JButton getLoginUserButton()
     {
         return loginUserButton;
     }
     private JPanel mainPanel;
 
-    public LoginWindow()
-    {
-        super("Login...");
-        //LoginWindow loginWindow = new LoginWindow();
 
+
+    public LoginWindow() {
+        super("Login...");
         setSize(350, 150);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         // Initialisation du panneau principal
         mainPanel = new JPanel();
@@ -51,6 +53,10 @@ public class LoginWindow extends JFrame
         passwordField = new JPasswordField(20);
         loginAdminButton = new JButton("Login Admin");
         loginUserButton = new JButton("Login User");
+
+        // Définir les actions de commande pour les boutons
+        loginAdminButton.setActionCommand(ActionsContrôleur.LOGINADMIN);
+        loginUserButton.setActionCommand(ActionsContrôleur.LOGINUSER);
 
         // Ajout des composants au panneau principal
         mainPanel.add(new JLabel("Username:"));
@@ -62,16 +68,72 @@ public class LoginWindow extends JFrame
 
         // Définition du panneau principal comme contenu de la fenêtre
         setContentPane(mainPanel);
-
-        setVisible(true);
     }
 
-    public static void main(String[] args)
+    public String getUsername() {
+        return usernameField.getText();
+    }
+
+    public String getPassword() {
+        return new String(passwordField.getPassword());
+    }
+
+    public void addLoginAdminListener(ActionListener listener)
     {
-        //SwingUtilities.invokeLater(LoginWindow::new);
-        LoginWindow loginWindow = new LoginWindow();
-        LibraryManager libraryManager = new LibraryManager();
-        LibraryClient libraryClient = new LibraryClient();
-        LoginContrôleur loginContrôleur = new LoginContrôleur(loginWindow, libraryManager, libraryClient);
+        loginAdminButton.addActionListener(listener);
+    }
+
+    public void addLoginUserListener(ActionListener listener)
+    {
+
+        loginUserButton.addActionListener(listener);
+    }
+
+    public void showMessage(String message)
+    {
+        JOptionPane.showMessageDialog(this, message);
+    }
+
+    @Override
+    public void setContrôleur(Contrôleur Contrôleur) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void run() {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public Bibliothecaire LoginAdmin()
+    {
+        // TODO Auto-generated method stub
+        System.out.println("test admin");
+        return null;
+
+    }
+
+    @Override
+    public Client LoginClient()
+    {
+        // TODO Auto-generated method stub
+        System.out.println("test client");
+        String username = loginWindow.getUsername();
+        String password = loginWindow.getPassword();
+        Client client = Client.seConnecter(username, password);
+
+        if (client != null)
+        {
+            loginWindow.showMessage("Connexion utilisateur réussie!");
+            System.out.println("Test");
+        }
+        else
+        {
+            loginWindow.showMessage("Nom d'utilisateur ou mot de passe utilisateur incorrect.");
+        }
+        return null;
+
     }
 }

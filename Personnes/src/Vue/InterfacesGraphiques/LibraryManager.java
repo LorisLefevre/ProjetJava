@@ -1,18 +1,21 @@
 package Vue.InterfacesGraphiques;
 
-import Contrôleur.LibraryManagerContrôleur;
+import Contrôleur.Contrôleur;
+import Contrôleur.ActionsContrôleur;
+import Vue.VueLibraryManager;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.event.ActionListener;
 
-public class LibraryManager extends JFrame implements ActionListener
+public class LibraryManager extends JFrame implements VueLibraryManager
 {
     private JTable table;
     private DefaultTableModel model;
 
-    private LibraryManagerContrôleur libraryManagerContrôleur;
+
     private JTextField adminNameField;
 
     public JTextField getAdminNameField()
@@ -95,12 +98,6 @@ public class LibraryManager extends JFrame implements ActionListener
         clearButton = new JButton("Effacer");
         exitButton = new JButton("Quitter");
 
-        // Ajout des action listeners aux boutons
-        addButton.addActionListener(this);
-        deleteButton.addActionListener(this);
-        clearButton.addActionListener(this);
-        exitButton.addActionListener(this);
-
         // Création d'un panneau pour la table
         JPanel tablePanel = new JPanel(new BorderLayout());
         tablePanel.add(scrollPane, BorderLayout.CENTER);
@@ -116,46 +113,17 @@ public class LibraryManager extends JFrame implements ActionListener
         buttonPanel.add(clearButton);
         buttonPanel.add(exitButton);
 
+        addButton.setActionCommand(ActionsContrôleur.AJOUT);
+        deleteButton.setActionCommand(ActionsContrôleur.SUPPRIMER);
+        viewButton.setActionCommand(ActionsContrôleur.MODIFIER);
+        editButton.setActionCommand(ActionsContrôleur.AFFICHER);
+        clearButton.setActionCommand(ActionsContrôleur.NETTOYER);
+        exitButton.setActionCommand(ActionsContrôleur.EXIT);
+
         // Création d'un panneau principal avec une disposition BorderLayout
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.add(buttonPanel, BorderLayout.NORTH); // Boutons au-dessus
         mainPanel.add(tablePanel, BorderLayout.CENTER); // Table en dessous
-
-        addButton.addActionListener(e -> showDialog("Un livre a été ajouté"));
-        addButton.addActionListener(e -> showDialog("Une erreur s'est produite lors de l'ajout du livre"));
-
-        deleteButton.addActionListener(e -> showDialog("Le livre a été supprimé"));
-        deleteButton.addActionListener(e -> showDialog("Une erreur s'est produite lors de la suppression du livre"));
-
-        viewButton.addActionListener(e -> showDialog("Vous regardez le livre suivant"));
-        viewButton.addActionListener(e -> showDialog("Une erreur s'est produite lors de l'affichage du livre"));
-
-        editButton.addActionListener(e -> showDialog("Le livre a été modifié"));
-        editButton.addActionListener(e -> showDialog("Une erreur s'est produite lors de la modification du livre"));
-
-        addButton.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                add();
-            }
-        });
-
-        clearButton.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                clear();
-            }
-        });
-
-        /*exitButton.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                exit();
-            }
-        });*/
 
         // Ajout du panneau principal à la JFrame
         getContentPane().add(mainPanel);
@@ -163,14 +131,42 @@ public class LibraryManager extends JFrame implements ActionListener
         //setVisible(true);
     }
 
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        // Ajoutez ici la logique pour gérer les actions des boutons
-        // par exemple, ajouter, supprimer, effacer ou quitter
+    public void addButtonListener(ActionListener listener)
+    {
+        addButton.addActionListener(listener);
     }
 
-    private void showDialog(String message)
+    public void deleteButtonListener(ActionListener listener)
+    {
+        deleteButton.addActionListener(listener);
+    }
+
+    public void editButtonListener(ActionListener listener)
+    {
+        editButton.addActionListener(listener);
+    }
+
+    public void viewButtonListener(ActionListener listener)
+    {
+        viewButton.addActionListener(listener);
+    }
+
+    public void clearButtonListener(ActionListener listener)
+    {
+        clearButton.addActionListener(listener);
+    }
+
+    public void exitButtonListener(ActionListener listener)
+    {
+        exitButton.addActionListener(listener);
+    }
+
+    public void adminNameFieldListener(ActionListener listener)
+    {
+        adminNameField.addActionListener(listener);
+    }
+
+    public void showMessage(String message)
     {
         JOptionPane.showMessageDialog(this, message);
     }

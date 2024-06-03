@@ -1,2 +1,2 @@
-LorisAdmin,LRS
-Loris,LRS
+Loris,Admin
+Admin,Admin

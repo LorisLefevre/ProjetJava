@@ -7,6 +7,7 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.File;
 
 public class Client extends Personne
 {
@@ -33,16 +34,13 @@ public class Client extends Personne
         this.Password = Password;
     }
 
-    public static Client seConnecter(String username, String password)
-    {
+    public static Client seConnecter(String username, String password) {
         loadUserData(); // Charger les données des utilisateurs depuis le fichier
         // Vérifier si le client existe déjà
-        if (clients.containsKey(username))
-        {
+        if (clients.containsKey(username)) {
             String storedPassword = clients.get(username);
             // Vérifier le mot de passe
-            if (storedPassword.equals(password))
-            {
+            if (storedPassword.equals(password)) {
                 System.out.println("Connexion réussie pour " + username);
                 return new Client(username, password);
             } else {
@@ -59,13 +57,24 @@ public class Client extends Personne
     }
 
     private static void loadUserData() {
-        try (BufferedReader reader = new BufferedReader(new FileReader("C:\\Users\\Loris\\Personnes\\USER.txt"))) {
+        File file = new File("C:\\Users\\Loris\\Personnes\\USER.txt");
+        if (!file.exists()) {
+            System.out.println("Le fichier n'existe pas, création d'un nouveau fichier.");
+            return;
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
-                clients.put(parts[0], parts[1]);
+                if (parts.length == 2) {
+                    clients.put(parts[0], parts[1]);
+                } else {
+                    System.out.println("Ligne mal formatée : " + line);
+                }
             }
         } catch (IOException e) {
+            System.err.println("Erreur lors de la lecture du fichier : " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -77,9 +86,11 @@ public class Client extends Personne
                 writer.newLine();
             }
         } catch (IOException e) {
+            System.err.println("Erreur lors de l'écriture dans le fichier : " + e.getMessage());
             e.printStackTrace();
         }
     }
+
 
     // Getters and setters
     public String getUsername() {
