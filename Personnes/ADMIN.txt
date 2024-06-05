@@ -1,2 +1,3 @@
 Loris,Admin
+LorisRace,LRS
 Admin,Admin

@@ -2,20 +2,25 @@ package Contrôleur;
 import Modèle.ClassesMétier.Bibliothecaire;
 import Modèle.ClassesMétier.Client;
 import Modèle.CoucheAccèsDonnées.*;
+import Vue.*;
 import Vue.InterfacesGraphiques.LibraryClient;
 import Vue.InterfacesGraphiques.LibraryManager;
 import Vue.InterfacesGraphiques.LoginWindow;
-import Vue.VueGénérale;
-import Vue.VueLogin;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+import static javax.swing.JColorChooser.showDialog;
 
 
 public final class Contrôleur implements ActionListener
 {
     private CoucheAccèsDonnées model;
     private VueLogin vue;
+
+    private VueLibraryClient vueClient;
+
+    private VueLibraryManager vueManager;
     private LoginWindow loginWindow;
 
     private LibraryManager libraryManager;
@@ -26,66 +31,37 @@ public final class Contrôleur implements ActionListener
     {
         this.model = model;
         this.vue = vue;
-        //this.vue.setContrôleur(this);
-        if (vue instanceof LoginWindow)
+        this.vue.setContrôleur(this);
+    }
+
+    public void ContrôleurClient(VueLibraryClient vueClient)
+    {
+        if (vueClient instanceof LibraryClient)
         {
-            this.loginWindow = (LoginWindow) vue;
-            this.loginWindow.addLoginAdminListener(this);
-            this.loginWindow.addLoginUserListener(this);
+            ((LibraryClient) vueClient).setContrôleurClient(this);
         }
     }
+
 
     public void run()
     {
         System.out.println("Ceci est le Contrôleur");
         this.vue.run();
-        loginWindow.setVisible(true);
     }
 
     @Override
     public void actionPerformed(ActionEvent e)
     {
+        this.loginWindow = (LoginWindow) vue;
         if(e.getActionCommand() == ActionsContrôleur.LOGINADMIN)
         {
-            System.out.println("Bouton LoginAdmin pressé");
-            String username = loginWindow.getUsername();
-            String password = loginWindow.getPassword();
-            Bibliothecaire admin = Bibliothecaire.seConnecter(username, password);
-
-            if (admin != null)
-            {
-                loginWindow.showMessage("Connexion admin réussie!");
-                LibraryManager libraryManager1 = new LibraryManager();
-                libraryManager1.setAdminName(username);
-                libraryManager1.setVisible(true);
-                // Rediriger vers la fenêtre principale ou des fonctions d'administrateur
-            }
-            else
-            {
-                loginWindow.showMessage("Nom d'utilisateur ou mot de passe admin incorrect.");
-            }
+            vue.LoginAdmin();
         }
 
         if(e.getActionCommand() == ActionsContrôleur.LOGINUSER)
         {
-            System.out.println("Bouton LoginUser pressé");
-            //vue.LoginClient();
-            String username = loginWindow.getUsername();
-            String password = loginWindow.getPassword();
-            Client client = Client.seConnecter(username, password);
-
-            if (client != null)
-            {
-                loginWindow.showMessage("Connexion utilisateur réussie!");
-                LibraryClient libraryClient1 = new LibraryClient();
-                libraryClient1.setUsername(username);
-                libraryClient1.setVisible(true);
-                // Rediriger vers la fenêtre principale ou des fonctions utilisateur
-            }
-            else
-            {
-                loginWindow.showMessage("Nom d'utilisateur ou mot de passe utilisateur incorrect.");
-            }
+            vue.LoginClient();
+            ContrôleurClient(this.vueClient);
         }
 
         if(e.getActionCommand() == ActionsContrôleur.EMPRUNTER)

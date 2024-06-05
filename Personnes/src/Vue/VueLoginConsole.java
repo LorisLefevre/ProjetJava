@@ -30,6 +30,7 @@ public class VueLoginConsole implements VueLogin
     {
         loginWindow.addLoginAdminListener(contrôleur);
         loginWindow.addLoginUserListener(contrôleur);
+        contrôleur = contrôleur;
 
     }
 

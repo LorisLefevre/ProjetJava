@@ -8,6 +8,7 @@ import Contrôleur.LoginContrôleur;
 import Vue.VueGénérale;
 import Vue.VueGénéraleConsole;
 import Vue.VueLogin;
+import Vue.InterfacesGraphiques.*;
 
 import javax.swing.*;
 import java.awt.event.ActionListener;
@@ -15,6 +16,18 @@ import java.awt.event.ActionListener;
 public class LoginWindow extends JFrame implements VueLogin
 {
     private LoginWindow loginWindow;
+
+    private LibraryClient libraryClient;
+
+    private LibraryManager libraryManager;
+
+    private Contrôleur contrôleur;
+    public Contrôleur getContrôleur()
+    {
+        return contrôleur;
+    }
+
+
     private JTextField usernameField;
 
     public JTextField getUsernameField()
@@ -40,10 +53,15 @@ public class LoginWindow extends JFrame implements VueLogin
 
 
 
-    public LoginWindow() {
+    public LoginWindow()
+    {
         super("Login...");
         setSize(350, 150);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        libraryClient = LibraryClient.getLibraryClient();
+        libraryManager = new LibraryManager();
+
 
         // Initialisation du panneau principal
         mainPanel = new JPanel();
@@ -95,14 +113,20 @@ public class LoginWindow extends JFrame implements VueLogin
     }
 
     @Override
-    public void setContrôleur(Contrôleur Contrôleur) {
-        // TODO Auto-generated method stub
-
+    public void setContrôleur(Contrôleur Contrôleur)
+    {
+        this.loginWindow = this;
+        loginAdminButton.setActionCommand(ActionsContrôleur.LOGINADMIN);
+        loginUserButton.setActionCommand(ActionsContrôleur.LOGINUSER);
+        loginWindow.addLoginAdminListener(Contrôleur);
+        loginWindow.addLoginUserListener(Contrôleur);
     }
 
     @Override
-    public void run() {
-        // TODO Auto-generated method stub
+    public void run()
+    {
+        this.loginWindow = this;
+        this.setVisible(true);
 
     }
 
@@ -110,7 +134,22 @@ public class LoginWindow extends JFrame implements VueLogin
     public Bibliothecaire LoginAdmin()
     {
         // TODO Auto-generated method stub
-        System.out.println("test admin");
+        System.out.println("Connexion admin");
+        String username = loginWindow.getUsername();
+        String password = loginWindow.getPassword();
+        Bibliothecaire bibliothecaire = Bibliothecaire.seConnecter(username, password);
+        if (bibliothecaire != null)
+        {
+            loginWindow.showMessage("Connexion admin");
+            this.libraryManager = new LibraryManager();
+            libraryManager.setAdminName(username);
+            libraryManager.setVisible(true);
+            return bibliothecaire;
+        }
+        else
+        {
+            loginWindow.showMessage("Nom d'utilisateur ou mot de passe utilisateur incorrect.");
+        }
         return null;
 
     }
@@ -119,21 +158,31 @@ public class LoginWindow extends JFrame implements VueLogin
     public Client LoginClient()
     {
         // TODO Auto-generated method stub
-        System.out.println("test client");
+        System.out.println("Connexion client");
         String username = loginWindow.getUsername();
         String password = loginWindow.getPassword();
         Client client = Client.seConnecter(username, password);
 
         if (client != null)
         {
-            loginWindow.showMessage("Connexion utilisateur réussie!");
-            System.out.println("Test");
+            showMessage("Connexion utilisateur réussie!");
+            if (this.libraryClient == null)
+            {
+                System.out.println("Nouveau client");
+                this.libraryClient = new LibraryClient();
+            }
+            this.libraryClient = libraryClient.getLibraryClient();
+            libraryClient.setUsername(username);
+            libraryClient.setVisible(true);
+            libraryClient.setContrôleurClient(contrôleur);
+            return client;
         }
         else
         {
-            loginWindow.showMessage("Nom d'utilisateur ou mot de passe utilisateur incorrect.");
+            showMessage("Nom d'utilisateur ou mot de passe utilisateur incorrect.");
         }
         return null;
+
 
     }
 }

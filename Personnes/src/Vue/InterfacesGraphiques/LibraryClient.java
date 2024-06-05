@@ -2,17 +2,27 @@ package Vue.InterfacesGraphiques;
 
 import Modèle.ClassesMétier.Client;
 import Contrôleur.ActionsContrôleur;
+import Modèle.ClassesMétier.Livre;
 import Vue.VueLibraryClient;
+import Contrôleur.Contrôleur;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class LibraryClient extends JFrame implements VueLibraryClient
 {
 
     private Client client;
+
+    private LibraryClient libraryClient;
 
     private JTextField usernameField;
     private JButton emprunterButton;
@@ -47,6 +57,15 @@ public class LibraryClient extends JFrame implements VueLibraryClient
     public JButton getQuitterButton()
     {
         return quitterButton;
+    }
+
+    private static LibraryClient instance;
+    public static LibraryClient getLibraryClient()
+    {
+        if (instance == null) {
+            instance = new LibraryClient();
+        }
+        return instance;
     }
     public LibraryClient()
     {
@@ -89,68 +108,66 @@ public class LibraryClient extends JFrame implements VueLibraryClient
         mainPanel.add(topPanel, BorderLayout.NORTH);
 
         // Deuxième ligne avec une JTable
-        String[] columnNames = {"Auteur", "Livre", "Editeur", "Quantité"};
-        Object[][] data = {
-                {"Auteur1", "Livre1", "Editeur1", 5},
-                {"Auteur2", "Livre2", "Editeur2", 3},
-                {"Auteur3", "Livre3", "Editeur3", 7},
-                {"Auteur4", "Livre4", "Editeur4", 2},
-                {"Auteur5", "Livre5", "Editeur5", 9},
-                {"Auteur6", "Livre6", "Editeur6", 4},
-                {"Auteur7", "Livre7", "Editeur7", 6},
-                {"Auteur8", "Livre8", "Editeur8", 1}
-        };
-
-        DefaultTableModel tableModel = new DefaultTableModel(data, columnNames);
+        String[] columnNames = {"ID","Auteur", "Livre", "Editeur", "Quantité"};
+        DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
         JTable table = new JTable(tableModel);
+
+        // Charger les données depuis le fichier
+        loadDataFromFile("LendBooks.txt", tableModel);
+
         JScrollPane scrollPane = new JScrollPane(table);
         mainPanel.add(scrollPane, BorderLayout.CENTER);
 
-        /*emprunterButton.addActionListener(e -> showDialog("Vous avez emprunté un livre."));
-        emprunterButton.addActionListener(e -> showDialog("Vous ne pouvez pas emprunter ce livre."));
-*/
-        rendreButton.addActionListener(e -> {
-            // Récupérer l'index de la ligne sélectionnée
-            int selectedRow = table.getSelectedRow();
-            if (selectedRow == -1) {
-                showDialog("Veuillez sélectionner un élément à rendre.");
-                return; // Sortir de la méthode si aucune ligne n'est sélectionnée
-            }
-
-            // Récupérer la quantité actuelle dans la JTable
-            int currentQuantity = (int) table.getValueAt(selectedRow, 3);
-
-            // Demander à l'utilisateur la quantité à rendre
-            String input = JOptionPane.showInputDialog(null, "Entrez la quantité à rendre:", "Rendre",
-                    JOptionPane.QUESTION_MESSAGE);
-            if (input == null) {
-                return; // L'utilisateur a annulé, sortir de la méthode
-            }
-
-            try {
-                int quantityToReturn = Integer.parseInt(input);
-                if (quantityToReturn <= 0) {
-                    showDialog("Veuillez saisir une quantité valide à rendre.");
-                    return; // Sortir de la méthode si la quantité à rendre est invalide
-                }
-
-                if (quantityToReturn > currentQuantity) {
-                    showDialog("La quantité à rendre ne peut pas dépasser la quantité actuelle.");
-                    return; // Sortir de la méthode si la quantité à rendre est supérieure à la quantité actuelle
-                }
-
-                // Mettre à jour la quantité dans la JTable
-                table.setValueAt(currentQuantity - quantityToReturn, selectedRow, 3);
-                showDialog("Vous avez rendu " + quantityToReturn + " exemplaires du livre.");
-            } catch (NumberFormatException ex) {
-                showDialog("Veuillez saisir un nombre valide pour la quantité à rendre.");
-            }
+        emprunterButton.addActionListener(e ->
+        {
+            showLibraryManagerForEmprunt();
         });
 
-        //quitterButton.addActionListener(e -> libraryClientContrôleur.exitApplication());
+        rendreButton.addActionListener(e ->
+        {
+            Rendre();
+        });
+
+        rechercherButton.addActionListener(e ->
+        {
+            RechercherLivre();
+        });
+
+        quitterButton.addActionListener(e ->
+        {
+            libraryClient.setVisible(false);
+        });
 
         getContentPane().add(mainPanel);
     }
+
+    private void loadDataFromFile(String filePath, DefaultTableModel tableModel)
+    {
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath)))
+        {
+            String line;
+            while ((line = reader.readLine()) != null)
+            {
+                String[] data = line.split(", ");
+                if (data.length >= 7) // Vérifiez que nous avons au moins 5 colonnes dans chaque ligne
+                {
+                    // Extraire uniquement les colonnes souhaitées
+                    String id = data[0];
+                    String auteur = data[2];
+                    String titre = data[1];
+                    String editeur = data[3];
+                    String quantite = data[7];
+
+                    // Ajouter ces données à la table
+                    tableModel.addRow(new Object[]{id,auteur, titre, editeur, quantite});
+                }
+            }
+        } catch (IOException e)
+        {
+            showMessage("Erreur lors de la lecture du fichier : " + e.getMessage());
+        }
+    }
+
 
     public void emprunterButtonListener(ActionListener listener)
     {
@@ -181,4 +198,127 @@ public class LibraryClient extends JFrame implements VueLibraryClient
         JOptionPane.showMessageDialog(this, message);
     }
 
+    @Override
+    public void run()
+    {
+        this.setVisible(true);
+    }
+
+    @Override
+    public void setContrôleurClient(Contrôleur Contrôleur)
+    {
+        System.out.println("B");
+        this.libraryClient = this;
+
+        System.out.println("C");
+
+        emprunterButton.setActionCommand(ActionsContrôleur.EMPRUNTER);
+        rendreButton.setActionCommand(ActionsContrôleur.RENDRE);
+        rechercherButton.setActionCommand(ActionsContrôleur.RECHERCHER);
+        quitterButton.setActionCommand(ActionsContrôleur.EXIT);
+        System.out.println("D");
+
+        emprunterButton.addActionListener(Contrôleur);
+        System.out.println("Listener ajouté pour Emprunter");
+        rendreButton.addActionListener(Contrôleur);
+        System.out.println("Listener ajouté pour Rendre");
+        rechercherButton.addActionListener(Contrôleur);
+        System.out.println("Listener ajouté pour Rechercher");
+        quitterButton.addActionListener(Contrôleur);
+        System.out.println("Listener ajouté pour Quitter");
+        System.out.println("E");
+    }
+
+    public void showLibraryManagerForEmprunt()
+    {
+        LibraryManager libraryManager = new LibraryManager();
+        libraryManager.setAdminName("Emprunt");
+        libraryManager.setVisible(true);
+
+        // Masquer les boutons
+        libraryManager.getAddButton().setVisible(false);
+        libraryManager.getDeleteButton().setVisible(false);
+        libraryManager.getEditButton().setVisible(false);
+        libraryManager.getViewButton().setVisible(false);
+        libraryManager.getClearButton().setVisible(false);
+        libraryManager.getExitButton().setVisible(false);
+
+        // Demander l'ID du livre à emprunter
+        String input = JOptionPane.showInputDialog(null, "Entrez l'ID du livre à emprunter:", "Emprunter Livre",
+                JOptionPane.QUESTION_MESSAGE);
+        if (input == null || input.isEmpty())
+        {
+            showDialog("ID du livre non valide.");
+            libraryManager.setVisible(false);
+            return;
+        }
+
+        try
+        {
+            int id = Integer.parseInt(input);
+            if (Livre.emprunterLivre(id))
+            {
+                showDialog("Vous avez emprunté le livre avec succès.");
+                libraryManager.setVisible(false);
+            }
+            else
+            {
+                showDialog("Impossible d'emprunter le livre. Vérifiez l'ID et la disponibilité.");
+            }
+        }
+        catch (NumberFormatException e)
+        {
+            showDialog("ID du livre non valide.");
+        }
+    }
+
+    public void Rendre()
+    {
+        // Demander l'ID du livre à rendre
+        String input = JOptionPane.showInputDialog(null, "Entrez l'ID du livre à rendre:", "Rendre Livre",
+                JOptionPane.QUESTION_MESSAGE);
+        if (input == null || input.isEmpty())
+        {
+            showDialog("ID du livre non valide.");
+            return;
+        }
+
+        try
+        {
+            int id = Integer.parseInt(input);
+            if (Livre.rendreLivre(id))
+            {
+                showDialog("Vous avez rendu le livre avec succès.");
+            }
+            else
+            {
+                showDialog("Impossible de rendre le livre. Vérifiez l'ID.");
+            }
+        }
+        catch (NumberFormatException e)
+        {
+            showDialog("ID du livre non valide.");
+        }
+    }
+
+    private void RechercherLivre()
+    {
+        String motCle = JOptionPane.showInputDialog(null, "Entrez le titre du livre à rechercher:", "Rechercher Livre",
+                JOptionPane.QUESTION_MESSAGE);
+        if (motCle == null || motCle.isEmpty()) {
+            showDialog("Titre du livre non valide.");
+            return;
+        }
+
+        List<Livre> resultats = Livre.rechercherLivre(motCle);
+
+        if (resultats.isEmpty())
+        {
+            showDialog("Aucun livre trouvé pour le titre: " + motCle);
+        }
+        else
+        {
+            showDialog("Le livre: " + motCle + " est dans la bibliotheque: ");
+        }
+    }
 }
