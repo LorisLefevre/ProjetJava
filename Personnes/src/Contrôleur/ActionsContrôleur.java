@@ -15,6 +15,4 @@ public abstract class ActionsContrôleur
     public static final String SUPPRIMER = "supprimer";
     public static final String MODIFIER = "modifier";
     public static final String AFFICHER = "afficher";
-
-    public static final String NETTOYER = "nettoyer";
 }

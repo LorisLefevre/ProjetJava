@@ -1,6 +1,9 @@
 package Vue.InterfacesGraphiques;
 
 import Contrôleur.ActionsContrôleur;
+import Contrôleur.Contrôleur;
+import Modèle.ClassesMétier.Livre;
+import Modèle.CoucheAccèsDonnées.*;
 import Vue.VueLibraryManager;
 
 import javax.swing.*;
@@ -13,58 +16,62 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
+import static javax.swing.JColorChooser.showDialog;
 
-public class LibraryManager extends JFrame implements VueLibraryManager
-{
+public class LibraryManager extends JFrame implements VueLibraryManager {
     private JTable table;
     private DefaultTableModel model;
 
-
     private JTextField adminNameField;
 
-    public JTextField getAdminNameField()
-    {
+    public JTextField getAdminNameField() {
         return adminNameField;
     }
 
-    public void setAdminName(String adminName)
-    {
+    public void setAdminName(String adminName) {
         adminNameField.setText(adminName);
     }
 
     private JButton addButton, deleteButton, viewButton, editButton, clearButton, exitButton;
 
-    public JButton getAddButton()
-    {
+    public JButton getAddButton() {
         return addButton;
     }
 
-    public JButton getDeleteButton()
-    {
+    public JButton getDeleteButton() {
         return deleteButton;
     }
 
-    public JButton getViewButton()
-    {
+    public JButton getViewButton() {
         return viewButton;
     }
 
-    public JButton getEditButton()
-    {
+    public JButton getEditButton() {
         return editButton;
     }
 
-    public JButton getClearButton()
-    {
+    public JButton getClearButton() {
         return clearButton;
     }
 
-    public JButton getExitButton()
-    {
+    public JButton getExitButton() {
         return exitButton;
     }
-    public LibraryManager()
-    {
+
+    private static LibraryManager instance;
+
+    public static LibraryManager getLibraryManager() {
+        if (instance == null) {
+            instance = new LibraryManager();
+        }
+        return instance;
+    }
+
+    private CoucheAccèsDonnées coucheAccèsDonnées;
+
+    public LibraryManager() {
+        coucheAccèsDonnées = new CoucheAccèsDonnéesDAO();
+
         String filePath = "C:\\Users\\Loris\\Personnes\\Books.txt";
         setTitle("Gestion de la bibliothèque de Sclessin");
         setSize(700, 270);
@@ -83,11 +90,9 @@ public class LibraryManager extends JFrame implements VueLibraryManager
         int numberOfRows = 15; // Vous pouvez modifier ce nombre selon vos besoins
 
         // Ajout de plusieurs lignes avec des JTextField vides
-        for (int row = 0; row < numberOfRows; row++)
-        {
+        for (int row = 0; row < numberOfRows; row++) {
             Object[] textFields = new Object[labels.length];
-            for (int i = 0; i < labels.length; i++)
-            {
+            for (int i = 0; i < labels.length; i++) {
                 textFields[i] = "";
             }
             model.addRow(textFields);
@@ -101,16 +106,13 @@ public class LibraryManager extends JFrame implements VueLibraryManager
             }
 
             @Override
-            public TableCellEditor getCellEditor(int row, int column)
-            {
+            public TableCellEditor getCellEditor(int row, int column) {
                 return new DefaultCellEditor(new JTextField());
             }
 
             @Override
-            public TableCellRenderer getCellRenderer(int row, int column)
-            {
-                return new TableCellRenderer()
-                {
+            public TableCellRenderer getCellRenderer(int row, int column) {
+                return new TableCellRenderer() {
                     @Override
                     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
                         return new JTextField((String) value);
@@ -131,7 +133,6 @@ public class LibraryManager extends JFrame implements VueLibraryManager
         deleteButton = new JButton("Supprimer");
         viewButton = new JButton("Regarder");
         editButton = new JButton("Modifier");
-        clearButton = new JButton("Effacer");
         exitButton = new JButton("Quitter");
 
         // Création d'un panneau pour la table
@@ -146,14 +147,12 @@ public class LibraryManager extends JFrame implements VueLibraryManager
         buttonPanel.add(deleteButton);
         buttonPanel.add(viewButton);
         buttonPanel.add(editButton);
-        buttonPanel.add(clearButton);
         buttonPanel.add(exitButton);
 
         addButton.setActionCommand(ActionsContrôleur.AJOUT);
         deleteButton.setActionCommand(ActionsContrôleur.SUPPRIMER);
         viewButton.setActionCommand(ActionsContrôleur.MODIFIER);
         editButton.setActionCommand(ActionsContrôleur.AFFICHER);
-        clearButton.setActionCommand(ActionsContrôleur.NETTOYER);
         exitButton.setActionCommand(ActionsContrôleur.EXIT);
 
         // Création d'un panneau principal avec une disposition BorderLayout
@@ -167,49 +166,54 @@ public class LibraryManager extends JFrame implements VueLibraryManager
         loadDataFromFile(filePath);
     }
 
-
-    public void addButtonListener(ActionListener listener)
-    {
+    public void addButtonListener(ActionListener listener) {
         addButton.addActionListener(listener);
     }
 
-    public void deleteButtonListener(ActionListener listener)
-    {
+    public void deleteButtonListener(ActionListener listener) {
         deleteButton.addActionListener(listener);
     }
 
-    public void editButtonListener(ActionListener listener)
-    {
+    public void editButtonListener(ActionListener listener) {
         editButton.addActionListener(listener);
     }
 
-    public void viewButtonListener(ActionListener listener)
-    {
+    public void viewButtonListener(ActionListener listener) {
         viewButton.addActionListener(listener);
     }
 
-    public void clearButtonListener(ActionListener listener)
-    {
-        clearButton.addActionListener(listener);
-    }
-
-    public void exitButtonListener(ActionListener listener)
-    {
+    public void exitButtonListener(ActionListener listener) {
         exitButton.addActionListener(listener);
     }
 
-    public void adminNameFieldListener(ActionListener listener)
-    {
+    public void adminNameFieldListener(ActionListener listener) {
         adminNameField.addActionListener(listener);
     }
 
-    public void showMessage(String message)
-    {
+    public void showMessage(String message) {
         JOptionPane.showMessageDialog(this, message);
     }
 
-    private void add()
-    {
+    public void setContrôleurManager(Contrôleur Contrôleur) {
+        addButton.setActionCommand(ActionsContrôleur.AJOUT);
+        deleteButton.setActionCommand(ActionsContrôleur.SUPPRIMER);
+        editButton.setActionCommand(ActionsContrôleur.MODIFIER);
+        viewButton.setActionCommand(ActionsContrôleur.AFFICHER);
+        exitButton.setActionCommand(ActionsContrôleur.EXIT);
+
+        addButton.addActionListener(Contrôleur);
+        System.out.println("Listener ajouté pour Ajout");
+        deleteButton.addActionListener(Contrôleur);
+        System.out.println("Listener ajouté pour Suppression");
+        editButton.addActionListener(Contrôleur);
+        System.out.println("Listener ajouté pour Modification");
+        viewButton.addActionListener(Contrôleur);
+        System.out.println("Listener ajouté pour Affichage");
+        exitButton.addActionListener(Contrôleur);
+        System.out.println("Listener ajouté pour Quitter");
+    }
+
+    private void add() {
         JFrame tableFrame = new JFrame("Contenu de la JTable");
         tableFrame.setSize(600, 240);
 
@@ -223,29 +227,157 @@ public class LibraryManager extends JFrame implements VueLibraryManager
         tableFrame.setVisible(true);
     }
 
-    private void clear()
-    {
-        for (int i = 0; i < model.getRowCount(); i++)
-        {
+    private void clear() {
+        for (int i = 0; i < model.getRowCount(); i++) {
             model.setValueAt("", i, 1);
         }
     }
 
+    private void showDialog(String message) {
+        JOptionPane.showMessageDialog(this, message);
+    }
+
     @Override
-    public void loadDataFromFile(String filePath)
-    {
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath)))
-        {
+    public void loadDataFromFile(String filePath) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;
             model.setRowCount(0); // Clear existing rows
             while ((line = reader.readLine()) != null) {
                 String[] data = line.split(", ");
                 model.addRow(data);
             }
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             showMessage("Erreur lors de la lecture du fichier : " + e.getMessage());
         }
+    }
+
+    public void Ajoute()
+    {
+        // Create a JDialog for data entry
+        JDialog dialog = new JDialog(this, "Ajouter un Livre", true);
+        dialog.setLayout(new GridLayout(10, 3));
+
+        JTextField idField = new JTextField();
+        JTextField titreField = new JTextField();
+        JTextField auteurField = new JTextField();
+        JTextField editeurField = new JTextField();
+        JTextField anneeField = new JTextField();
+        JTextField isbnField = new JTextField();
+        JTextField nombreCopiesField = new JTextField();
+
+        // Add labels and fields to the dialog, aligning labels to the left and text fields to the right
+        dialog.add(new JLabel("ID du Livre:", SwingConstants.CENTER));
+        dialog.add(idField);
+        dialog.add(new JLabel("Titre du Livre:", SwingConstants.CENTER));
+        dialog.add(titreField);
+        dialog.add(new JLabel("Auteur:", SwingConstants.CENTER));
+        dialog.add(auteurField);
+        dialog.add(new JLabel("Editeur:", SwingConstants.CENTER));
+        dialog.add(editeurField);
+        dialog.add(new JLabel("Année de Publication:", SwingConstants.CENTER));
+        dialog.add(anneeField);
+        dialog.add(new JLabel("ISBN:", SwingConstants.CENTER));
+        dialog.add(isbnField);
+        isbnField.setEditable(false);
+        dialog.add(new JLabel("Nombre de Copies:", SwingConstants.CENTER));
+        dialog.add(nombreCopiesField);
+
+        JButton submitButton = new JButton("Ajouter");
+        submitButton.addActionListener(e -> {
+            int id = Integer.parseInt(idField.getText());
+            String titre = titreField.getText();
+            String auteur = auteurField.getText();
+            String editeur = editeurField.getText();
+            int annee = Integer.parseInt(anneeField.getText());
+            String isbn = isbnField.getText();
+            int nombreCopies = Integer.parseInt(nombreCopiesField.getText());
+
+            Livre nouveauLivre = new Livre(id, titre, auteur, editeur, annee, isbn, nombreCopies);
+            coucheAccèsDonnées.AjouteLivre("C:\\Users\\Loris\\Personnes\\Books.txt",nouveauLivre);
+            dialog.dispose();
+        });
+
+        dialog.add(submitButton);
+
+        dialog.pack();
+        dialog.setVisible(true);
+    }
+
+    public void Supprime() {
+        String filePath = "C:\\Users\\Loris\\Personnes\\Books.txt";
+        String input = JOptionPane.showInputDialog(null, "Entrez l'ID du livre à rendre:", "Rendre Livre",
+                JOptionPane.QUESTION_MESSAGE);
+        if (input == null || input.isEmpty()) {
+            showDialog("ID du livre non valide.");
+            return;
+        }
+
+        try {
+            int id = Integer.parseInt(input);
+            if (coucheAccèsDonnées.supprimerLivre(id, filePath)) {
+                showDialog("Vous avez supprimé le livre avec succès.");
+            } else {
+                showDialog("Impossible de supprimer le livre. Vérifiez l'ID.");
+            }
+        } catch (NumberFormatException e) {
+            showDialog("ID du livre non valide.");
+        }
+    }
+
+    public void Modifier() {
+        // Create a JDialog for data entry
+        JDialog dialog = new JDialog(this, "Modifier un Livre", true);
+        dialog.setLayout(new GridLayout(10, 2));
+
+        JTextField idField = new JTextField();
+        JTextField titreField = new JTextField();
+        JTextField auteurField = new JTextField();
+        JTextField editeurField = new JTextField();
+        JTextField anneeField = new JTextField();
+
+        dialog.add(new JLabel("ID du Livre:"));
+        dialog.add(idField);
+        dialog.add(new JLabel("Titre du Livre:"));
+        dialog.add(titreField);
+        dialog.add(new JLabel("Auteur:"));
+        dialog.add(auteurField);
+        dialog.add(new JLabel("Editeur:"));
+        dialog.add(editeurField);
+        dialog.add(new JLabel("Année de Publication:"));
+        dialog.add(anneeField);
+
+        JButton submitButton = new JButton("Modifier");
+        submitButton.addActionListener(e -> {
+            try {
+                int id = Integer.parseInt(idField.getText());
+                String titre = titreField.getText();
+                String auteur = auteurField.getText();
+                String editeur = editeurField.getText();
+                int annee = Integer.parseInt(anneeField.getText());
+
+                Livre livreModifié = new Livre(id, titre, auteur, editeur, annee, "", 0);
+                boolean success = coucheAccèsDonnées.modifierLivre(id, titre,auteur, editeur, annee, "C:\\Users\\Loris\\Personnes\\Books.txt");
+                if (success) {
+                    showMessage("Livre modifié avec succès !");
+                } else {
+                    showMessage("Erreur : Livre non trouvé avec l'ID spécifié.");
+                }
+            } catch (NumberFormatException ex) {
+                showMessage("Erreur : Veuillez entrer des valeurs valides.");
+            } catch (Exception ex) {
+                showMessage("Erreur : " + ex.getMessage());
+            }
+            dialog.dispose();
+        });
+
+        dialog.add(submitButton);
+
+        dialog.pack();
+        dialog.setVisible(true);
+    }
+
+    public void Afficher() {
+        String filePath = "C://Users//Loris//Personnes//Books.txt";
+        loadDataFromFile(filePath);
     }
 }

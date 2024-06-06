@@ -8,31 +8,19 @@ import java.util.*;
 
 public interface CoucheAccèsDonnées
 {
-    int AjoutLivre(Livre livre);
-    int AjoutAuteur(Auteur auteur);
-    int AjoutEditeur(Editeur editeur);
 
-    boolean ModifierLivre(Livre livre);
+    String GenererISBN();
+    void AjouteLivre(String filePath, Livre livre);
 
-    boolean ModifierAuteur(Auteur auteur);
+    boolean supprimerLivre(int Id, String filePath);
 
-    boolean ModifierEditeur(Editeur editeur);
+    boolean modifierLivre(int id, String nouveauTitre, String nouvelAuteur, String nouvelEditeur, int nouvelleAnnee, String filePath);
+    void affiche(String filePath);
 
-    boolean SupprimerLivre(int idLivre);
+    boolean emprunterLivre(int id);
 
-    boolean SupprimerLivre(Livre livre);
+    boolean rendreLivre(int id);
 
-    boolean SupprimerAuteur(int idAuteur);
-    boolean SupprimerAuteur(Auteur auteur);
+    List<Livre> rechercherLivre(String motCle);
 
-    boolean SupprimerEditeur(int idEditeur);
-
-    boolean SupprimerEditeur(Editeur editeur);
-
-    Livre RechercherLivre(int idLivre);
-    List<Livre> ListerLivres();
-
-    List<Auteur> ListerAuteurs();
-
-    List<Editeur> ListerEditeurs();
 }

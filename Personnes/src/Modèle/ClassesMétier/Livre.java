@@ -1,6 +1,9 @@
 package Modèle.ClassesMétier;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -8,7 +11,6 @@ import java.util.Scanner;
 public class Livre
 {
     private int ID;
-    private static int nextID = 1;
     private String Titre;
     private String Auteur;
     private String Editeur;
@@ -94,7 +96,7 @@ public class Livre
 
     public Livre()
     {
-        IncrementeID();
+        this.ID = 0;
         this.Titre = "";
         this.Auteur = "";
         this.Editeur = "";
@@ -105,7 +107,7 @@ public class Livre
 
     public Livre(int ID,String Titre, String Auteur, String Editeur, int Annee, String ISBN, int NombreCopies)
     {
-        IncrementeID();
+        this.ID = ID;
         this.Titre = Titre;
         this.Auteur = Auteur;
         this.Editeur = Editeur;
@@ -137,13 +139,7 @@ public class Livre
         return ISBN;
     }
 
-    public int IncrementeID()
-    {
-        nextID++;
-        this.ID = nextID;
 
-        return nextID;
-    }
 
     public void Afficher()
     {
@@ -158,8 +154,10 @@ public class Livre
 
     public void Saisir()
     {
+        System.out.println("Entrez l'ID : ");
         Scanner scanner = new Scanner(System.in);
-        this.ID = IncrementeID();
+        this.ID = scanner.nextInt();
+        scanner.nextLine();
         System.out.println("Entrez le titre : ");
         this.Titre = scanner.nextLine();
         System.out.println("Entrez l'auteur : ");
@@ -182,26 +180,6 @@ public class Livre
         Livre livre = (Livre)o;
         return this.Auteur.equals(livre.Auteur) && this.Titre.equals(livre.Titre) && this.Editeur.equals(livre.Editeur) && this.Annee == livre.Annee;
     }
-
-    public void AjouteLivre(String filePath)
-    {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, true)))
-        {
-            writer.write(this.ID + IncrementeID() + ", " +
-                    this.Titre + ", " +
-                    this.Auteur + ", " +
-                    this.Editeur + ", " +
-                    this.Annee + ", " +
-                    this.ISBN + ", " +
-                    this.NombreCopies);
-            writer.newLine();
-        }
-        catch (IOException e)
-        {
-            System.err.println("Erreur lors de l'écriture du fichier : " + e.getMessage());
-        }
-    }
-
     public static void affiche(String filePath)
     {
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath)))
@@ -217,186 +195,6 @@ public class Livre
             System.err.println("Erreur lors de la lecture du fichier : " + e.getMessage());
         }
     }
-
-    public static Livre getLivreById(int id)
-    {
-        try (BufferedReader reader = new BufferedReader(new FileReader("C:\\Users\\Loris\\Personnes\\Books.txt")))
-        {
-            String line;
-            while ((line = reader.readLine()) != null)
-            {
-                String[] parts = line.split(",");
-                int livreId = Integer.parseInt(parts[0]);
-                if (livreId == id) {
-                    String titre = parts[1];
-                    String auteur = parts[2];
-                    String editeur = parts[3];
-                    int Annee = Integer.parseInt(parts[4]);
-                    String ISBN = parts[5];
-                    int copies = Integer.parseInt(parts[6]);
-                    return new Livre(livreId, titre, auteur, editeur, Annee, ISBN, copies);
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public static boolean updateCopiesInBooksFile(Livre livre)
-    {
-        File inputFile = new File("C:\\Users\\Loris\\Personnes\\Books.txt");
-        File tempFile = new File("C:\\Users\\Loris\\Personnes\\Books_temp.txt");
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(inputFile));
-             BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile)))
-        {
-
-            String line;
-            while ((line = reader.readLine()) != null)
-            {
-                String[] parts = line.split(",");
-                int id = Integer.parseInt(parts[0]);
-                if (id == livre.getID())
-                {
-                    writer.write(livre.getID() + "," + livre.getTitre() + "," + livre.getAuteur() + "," + livre.getEditeur() + "," + livre.getAnnee() + "," + livre.getISBN() + "," + livre.getNombreCopies());
-                    writer.newLine();
-                }
-                else
-                {
-                    writer.write(line);
-                    writer.newLine();
-                }
-            }
-            inputFile.delete();
-            tempFile.renameTo(inputFile);
-            return true;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    public static boolean emprunterLivre(int id) {
-        String booksFilePath = "C:\\Users\\Loris\\Personnes\\Books.txt";
-        String lendBooksFilePath = "C:\\Users\\Loris\\Personnes\\LendBooks.txt";
-
-        try (BufferedReader booksReader = new BufferedReader(new FileReader(booksFilePath));
-             BufferedWriter lendWriter = new BufferedWriter(new FileWriter(lendBooksFilePath, true))) {
-
-            String line;
-            boolean found = false;
-
-            while ((line = booksReader.readLine()) != null) {
-                String[] parts = line.split(", ");
-                int bookID = Integer.parseInt(parts[0].trim());
-
-                if (bookID == id) {
-                    found = true;
-                    lendWriter.write(line + ", 1"); // Ajouter le nombre d'emprunts (initialisé à 1)
-                    lendWriter.newLine();
-
-                    // Afficher un message dans la console pour le suivi
-                    System.out.println("Livre emprunté avec succès : " + line);
-                    break; // Arrêter la boucle car le livre a été trouvé
-                }
-            }
-
-            // Si le livre avec l'ID donné n'est pas trouvé dans le fichier
-            if (!found) {
-                System.out.println("Livre non trouvé avec l'ID : " + id);
-                return false;
-            }
-
-        } catch (IOException e) {
-            System.err.println("Erreur lors de la lecture/écriture du fichier : " + e.getMessage());
-            return false;
-        }
-
-        return true;
-    }
-
-    public static boolean rendreLivre(int id)
-    {
-        String lendBooksFilePath = "C:\\Users\\Loris\\Personnes\\LendBooks.txt";
-        String tempLendBooksFilePath = "C:\\Users\\Loris\\Personnes\\TempLendBooks.txt";
-
-        try (BufferedReader lendReader = new BufferedReader(new FileReader(lendBooksFilePath));
-             BufferedWriter tempLendWriter = new BufferedWriter(new FileWriter(tempLendBooksFilePath))) {
-
-            String line;
-            boolean found = false;
-
-            while ((line = lendReader.readLine()) != null) {
-                String[] parts = line.split(", ");
-                int bookID = Integer.parseInt(parts[0].trim());
-
-                if (bookID == id) {
-                    found = true;
-                    continue; // Ignorer cette ligne car c'est celle que nous voulons supprimer
-                }
-
-                tempLendWriter.write(line);
-                tempLendWriter.newLine();
-            }
-
-            // Si le livre avec l'ID donné n'est pas trouvé dans le fichier
-            if (!found) {
-                System.out.println("Livre non trouvé avec l'ID : " + id);
-                return false;
-            }
-
-        } catch (IOException e) {
-            System.err.println("Erreur lors de la lecture/écriture du fichier : " + e.getMessage());
-            return false;
-        }
-
-        // Remplacer le fichier d'origine par le fichier temporaire
-        try {
-            java.nio.file.Files.move(java.nio.file.Paths.get(tempLendBooksFilePath),
-                    java.nio.file.Paths.get(lendBooksFilePath),
-                    java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException e) {
-            System.err.println("Erreur lors de la suppression du fichier temporaire : " + e.getMessage());
-            return false;
-        }
-
-        // Afficher un message dans la console pour le suivi
-        System.out.println("Livre rendu avec succès (ID : " + id + ")");
-
-        return true;
-    }
-
-    public static List<Livre> rechercherLivre(String motCle)
-    {
-        List<Livre> resultats = new ArrayList<>();
-
-        try (BufferedReader reader = new BufferedReader(new FileReader("Books.txt"))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] data = line.split(", ");
-                if (data.length >= 5) {
-                    int id = Integer.parseInt(data[0]);
-                    String titre = data[1];
-                    String auteur = data[2];
-                    String editeur = data[3];
-                    int Annee = Integer.parseInt(data[4]);
-                    String ISBN = data[5];
-                    int quantite = Integer.parseInt(data[6]);
-
-                    if (titre.toLowerCase().contains(motCle.toLowerCase())) {
-                        Livre livre = new Livre(id, titre, auteur, editeur, Annee, ISBN, quantite);
-                        resultats.add(livre);
-                    }
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return resultats;
-    }
-
 
     public static void main(String[] args)
     {
@@ -434,9 +232,10 @@ public class Livre
         String filePath = "C:\\Users\\Loris\\Personnes\\Books.txt";
         /*livre3.AjouteLivre(filePath);
         livre4.AjouteLivre(filePath);
-        livre5.AjouteLivre(filePath);*/
+        livre5.AjouteLivre(filePath);
         livre6.AjouteLivre(filePath);
-
+        supprimerLivre(7, filePath);
+        modifierLivre(4, "Livre Modifié", "Nouvel Auteur", "Nouvel Editeur", 2024, filePath);*/
         affiche(filePath);
     }
 }

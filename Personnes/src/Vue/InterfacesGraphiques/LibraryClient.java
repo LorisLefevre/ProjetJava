@@ -3,6 +3,8 @@ package Vue.InterfacesGraphiques;
 import Modèle.ClassesMétier.Client;
 import Contrôleur.ActionsContrôleur;
 import Modèle.ClassesMétier.Livre;
+import Modèle.CoucheAccèsDonnées.CoucheAccèsDonnées;
+import Modèle.CoucheAccèsDonnées.CoucheAccèsDonnéesDAO;
 import Vue.VueLibraryClient;
 import Contrôleur.Contrôleur;
 
@@ -14,13 +16,14 @@ import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class LibraryClient extends JFrame implements VueLibraryClient
 {
 
     private Client client;
+
+    private CoucheAccèsDonnées coucheAccèsDonnées;
 
     private LibraryClient libraryClient;
 
@@ -69,11 +72,12 @@ public class LibraryClient extends JFrame implements VueLibraryClient
     }
     public LibraryClient()
     {
-
+        coucheAccèsDonnées = new CoucheAccèsDonnéesDAO();
         initializeUI();
     }
 
-    private void initializeUI() {
+    private void initializeUI()
+    {
         setTitle("Gestionnaire de bibliothèque");
         setSize(600, 400);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -118,26 +122,6 @@ public class LibraryClient extends JFrame implements VueLibraryClient
         JScrollPane scrollPane = new JScrollPane(table);
         mainPanel.add(scrollPane, BorderLayout.CENTER);
 
-        emprunterButton.addActionListener(e ->
-        {
-            showLibraryManagerForEmprunt();
-        });
-
-        rendreButton.addActionListener(e ->
-        {
-            Rendre();
-        });
-
-        rechercherButton.addActionListener(e ->
-        {
-            RechercherLivre();
-        });
-
-        quitterButton.addActionListener(e ->
-        {
-            libraryClient.setVisible(false);
-        });
-
         getContentPane().add(mainPanel);
     }
 
@@ -168,6 +152,13 @@ public class LibraryClient extends JFrame implements VueLibraryClient
         }
     }
 
+    private void ClearTable(DefaultTableModel tableModel)
+    {
+        for (int i = 0; i < tableModel.getRowCount(); i++)
+        {
+            tableModel.setValueAt("", i, 1);
+        }
+    }
 
     public void emprunterButtonListener(ActionListener listener)
     {
@@ -194,7 +185,8 @@ public class LibraryClient extends JFrame implements VueLibraryClient
         JOptionPane.showMessageDialog(this, message);
     }
 
-    private void showDialog(String message) {
+    private void showDialog(String message)
+    {
         JOptionPane.showMessageDialog(this, message);
     }
 
@@ -207,16 +199,13 @@ public class LibraryClient extends JFrame implements VueLibraryClient
     @Override
     public void setContrôleurClient(Contrôleur Contrôleur)
     {
-        System.out.println("B");
-        this.libraryClient = this;
 
-        System.out.println("C");
+        //this.libraryClient = this;
 
         emprunterButton.setActionCommand(ActionsContrôleur.EMPRUNTER);
         rendreButton.setActionCommand(ActionsContrôleur.RENDRE);
         rechercherButton.setActionCommand(ActionsContrôleur.RECHERCHER);
         quitterButton.setActionCommand(ActionsContrôleur.EXIT);
-        System.out.println("D");
 
         emprunterButton.addActionListener(Contrôleur);
         System.out.println("Listener ajouté pour Emprunter");
@@ -226,10 +215,10 @@ public class LibraryClient extends JFrame implements VueLibraryClient
         System.out.println("Listener ajouté pour Rechercher");
         quitterButton.addActionListener(Contrôleur);
         System.out.println("Listener ajouté pour Quitter");
-        System.out.println("E");
+
     }
 
-    public void showLibraryManagerForEmprunt()
+    public void Emprunter()
     {
         LibraryManager libraryManager = new LibraryManager();
         libraryManager.setAdminName("Emprunt");
@@ -240,7 +229,6 @@ public class LibraryClient extends JFrame implements VueLibraryClient
         libraryManager.getDeleteButton().setVisible(false);
         libraryManager.getEditButton().setVisible(false);
         libraryManager.getViewButton().setVisible(false);
-        libraryManager.getClearButton().setVisible(false);
         libraryManager.getExitButton().setVisible(false);
 
         // Demander l'ID du livre à emprunter
@@ -256,7 +244,7 @@ public class LibraryClient extends JFrame implements VueLibraryClient
         try
         {
             int id = Integer.parseInt(input);
-            if (Livre.emprunterLivre(id))
+            if (coucheAccèsDonnées.emprunterLivre(id))
             {
                 showDialog("Vous avez emprunté le livre avec succès.");
                 libraryManager.setVisible(false);
@@ -286,7 +274,7 @@ public class LibraryClient extends JFrame implements VueLibraryClient
         try
         {
             int id = Integer.parseInt(input);
-            if (Livre.rendreLivre(id))
+            if (coucheAccèsDonnées.rendreLivre(id))
             {
                 showDialog("Vous avez rendu le livre avec succès.");
             }
@@ -301,7 +289,7 @@ public class LibraryClient extends JFrame implements VueLibraryClient
         }
     }
 
-    private void RechercherLivre()
+    public void RechercherLivre()
     {
         String motCle = JOptionPane.showInputDialog(null, "Entrez le titre du livre à rechercher:", "Rechercher Livre",
                 JOptionPane.QUESTION_MESSAGE);
@@ -310,7 +298,7 @@ public class LibraryClient extends JFrame implements VueLibraryClient
             return;
         }
 
-        List<Livre> resultats = Livre.rechercherLivre(motCle);
+        List<Livre> resultats = coucheAccèsDonnées.rechercherLivre(motCle);
 
         if (resultats.isEmpty())
         {
@@ -318,7 +306,14 @@ public class LibraryClient extends JFrame implements VueLibraryClient
         }
         else
         {
-            showDialog("Le livre: " + motCle + " est dans la bibliotheque: ");
+            StringBuilder sb = new StringBuilder();
+            for (Livre livre : resultats)
+            {
+                sb.append("ID: ").append(livre.getID()).append(", ");
+                sb.append("Titre: ").append(livre.getTitre()).append(", ");
+                sb.append("Auteur: ").append(livre.getAuteur()).append("\n");
+            }
+            showDialog(sb.toString());
         }
     }
 }

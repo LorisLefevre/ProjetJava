@@ -36,10 +36,14 @@ public final class Contrôleur implements ActionListener
 
     public void ContrôleurClient(VueLibraryClient vueClient)
     {
-        if (vueClient instanceof LibraryClient)
-        {
-            ((LibraryClient) vueClient).setContrôleurClient(this);
-        }
+        this.libraryClient = (LibraryClient) vueClient;
+        vueClient.setContrôleurClient(this);
+    }
+
+    public void ContrôleurManager(VueLibraryManager vueManager)
+    {
+        this.libraryManager = (LibraryManager) vueManager;
+        vueManager.setContrôleurManager(this);
     }
 
 
@@ -52,37 +56,37 @@ public final class Contrôleur implements ActionListener
     @Override
     public void actionPerformed(ActionEvent e)
     {
-        this.loginWindow = (LoginWindow) vue;
         if(e.getActionCommand() == ActionsContrôleur.LOGINADMIN)
         {
             vue.LoginAdmin();
+            vueManager = LibraryManager.getLibraryManager();
+            ContrôleurManager(vueManager);
+
         }
 
         if(e.getActionCommand() == ActionsContrôleur.LOGINUSER)
         {
             vue.LoginClient();
-            ContrôleurClient(this.vueClient);
+            vueClient = LibraryClient.getLibraryClient(); // Récupérez l'instance appropriée
+            ContrôleurClient(vueClient);
         }
 
         if(e.getActionCommand() == ActionsContrôleur.EMPRUNTER)
         {
             System.out.println("Bouton Emprunter pressé");
-            libraryClient.showMessage("Vous avez emprunté ce livre");
-            libraryClient.showMessage("Vous ne pouvez pas emprunter ce livre");
+            libraryClient.Emprunter();
         }
 
         if(e.getActionCommand() == ActionsContrôleur.RENDRE)
         {
             System.out.println("Bouton Rendre pressé");
-            libraryClient.showMessage("Vous avez rendu un livre");
-            libraryClient.showMessage("Vous n'avez pas de livre à rendre");
+            libraryClient.Rendre();
         }
 
         if(e.getActionCommand() == ActionsContrôleur.RECHERCHER)
         {
             System.out.println("Bouton Rechercher pressé");
-            libraryClient.showMessage("Ce livre est disponible");
-            libraryClient.showMessage("Ce livre n'est pas disponible");
+            libraryClient.RechercherLivre();
         }
 
         if(e.getActionCommand() == ActionsContrôleur.EXIT)
@@ -94,34 +98,25 @@ public final class Contrôleur implements ActionListener
         if(e.getActionCommand() == ActionsContrôleur.AJOUT)
         {
             System.out.println("Bouton Ajouter pressé");
-            libraryManager.showMessage("Un livre a été ajouté");
-            libraryManager.showMessage("Une erreur s'est produite lors de l'ajout du livre");
+            libraryManager.Ajoute();
         }
 
         if(e.getActionCommand() == ActionsContrôleur.SUPPRIMER)
         {
             System.out.println("Bouton Supprimer pressé");
-            libraryManager.showMessage("Le livre a été supprimé");
-            libraryManager.showMessage("Une erreur s'est produite lors de la suppression du livre");
+            libraryManager.Supprime();
         }
 
         if(e.getActionCommand() == ActionsContrôleur.MODIFIER)
         {
             System.out.println("Bouton Modifier pressé");
-            libraryManager.showMessage("Le livre a été modifié");
-            libraryManager.showMessage("Une erreur s'est produite lors de la modification du livre");
+            libraryManager.Modifier();
         }
 
         if(e.getActionCommand() == ActionsContrôleur.AFFICHER)
         {
             System.out.println("Bouton Afficher pressé");
-            libraryManager.showMessage("Vous regardez le livre suivant");
-            libraryManager.showMessage("Une erreur s'est produite lors de l'affichage du livre");
-        }
-
-        if(e.getActionCommand() == ActionsContrôleur.NETTOYER)
-        {
-            System.out.println("Bouton Nettoyer pressé");
+            libraryManager.Afficher();
         }
     }
 }

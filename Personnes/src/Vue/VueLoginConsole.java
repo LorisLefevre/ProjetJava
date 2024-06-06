@@ -64,6 +64,22 @@ public class VueLoginConsole implements VueLogin
     {
         // TODO Auto-generated method stub
         System.out.println("Tentative de connexion à la fenêtre admin");
-        return null;
+        String username = loginWindow.getUsername();
+        String password = loginWindow.getPassword();
+
+        Bibliothecaire bibliothecaire = Bibliothecaire.seConnecter(username, password);
+        if (bibliothecaire != null)
+        {
+            loginWindow.showMessage("Connexion manager réussie!");
+            System.out.println("TRUE");
+            return bibliothecaire;
+            // Rediriger vers la fenêtre principale ou des fonctions utilisateur
+        }
+        else
+        {
+            loginWindow.showMessage("Nom d'utilisateur ou mot de passe manager incorrect.");
+            System.out.println("FALSE");
+            return null;
+        }
     }
 }

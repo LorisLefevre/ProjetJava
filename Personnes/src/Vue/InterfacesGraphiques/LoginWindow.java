@@ -4,11 +4,7 @@ import Contrôleur.Contrôleur;
 import Contrôleur.ActionsContrôleur;
 import Modèle.ClassesMétier.Bibliothecaire;
 import Modèle.ClassesMétier.Client;
-import Contrôleur.LoginContrôleur;
-import Vue.VueGénérale;
-import Vue.VueGénéraleConsole;
 import Vue.VueLogin;
-import Vue.InterfacesGraphiques.*;
 
 import javax.swing.*;
 import java.awt.event.ActionListener;
@@ -120,6 +116,8 @@ public class LoginWindow extends JFrame implements VueLogin
         loginUserButton.setActionCommand(ActionsContrôleur.LOGINUSER);
         loginWindow.addLoginAdminListener(Contrôleur);
         loginWindow.addLoginUserListener(Contrôleur);
+
+
     }
 
     @Override
@@ -140,10 +138,17 @@ public class LoginWindow extends JFrame implements VueLogin
         Bibliothecaire bibliothecaire = Bibliothecaire.seConnecter(username, password);
         if (bibliothecaire != null)
         {
-            loginWindow.showMessage("Connexion admin");
-            this.libraryManager = new LibraryManager();
+            loginWindow.showMessage("Connexion admin réussie");
+
+            if (this.libraryManager == null)
+            {
+                System.out.println("Nouveau manager");
+                this.libraryManager = new LibraryManager();
+            }
+            this.libraryManager = LibraryManager.getLibraryManager();
             libraryManager.setAdminName(username);
             libraryManager.setVisible(true);
+            libraryManager.setContrôleurManager(contrôleur);
             return bibliothecaire;
         }
         else

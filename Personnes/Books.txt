@@ -1,7 +1,6 @@
 0, GameManagement, Loris Lefevre, Loris Lefevre, 2024, 438756, 2
 1, Dragon Ball, Akira Toryama, Glénat, 1994, 358560, 25
 2, Le petit cheval de manège, Just Leblanc, Les films du plat pays, 1998, 755023, 50
-3, Livre Test, Auteur Test, Editeur Test, 2005, 264602, 15
-4, Livre Témoin, Jean Avocat, Marc Juge, 1980, 160512, 15
+4, Test, Auteur, Editeur, 2006, 160512, 15
 5, Dans la Rome de Césars, Gilles Chaillet, Glénat, 2017, 203045, 9
-
+6, Coder Proprement, Robert C.Martin, Pearson, 2019, 178539, 15
