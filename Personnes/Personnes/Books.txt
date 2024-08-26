@@ -1,0 +1,7 @@
+0, Livre MVC, Loris Lefevre, HEPL, 2024, 438756, 2
+1, Dragon Ball, Akira Toryama, Glénat, 1994, 358560, 25
+2, Le petit cheval de manège, Just Leblanc, Les films du plat pays, 1998, 755023, 50
+4, Le livre de la jungle, Mowgli, Baloo, 1998, 160512, 15
+6, Coder Proprement, Robert C.Martin, Pearson, 2019, 178539, 15
+10, TestAjout, Loris, HEPL, 2024, 523580, 30
+20, Loris le DrivaGoat, Loris Lefevre, Moi-Même, 2024, 288974, 25

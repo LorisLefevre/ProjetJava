@@ -1,0 +1,5 @@
+2, Le petit cheval de manège, Just Leblanc, Les films du plat pays, 1998, 755023, 50, 1
+0, GameManagement, Loris Lefevre, Loris Lefevre, 2024, 438756, 2, 1
+4, Test, Auteur, Editeur, 2006, 160512, 15, 1
+7, Livre 7, Auteur 7, Editeur 7, 2007, 044741, 7, 1
+20, Loris le DrivaGoat, Loris Lefevre, Moi-Même, 2024, 288974, 25, 1
